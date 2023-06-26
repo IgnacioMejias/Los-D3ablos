@@ -9,10 +9,12 @@ d3.json("../US_States_and_Teams.json").then((dataUSAEquipos) => {
       const width = 960;
       const height = 600;
 
+      const mapContainer = d3.select("#map-container");
+
       // Crea el SVG
-      const svg = d3
-        .select("body")
+      const svg = mapContainer
         .append("svg")
+        .attr("id", "map-svg")
         .attr("width", width)
         .attr("height", height);
 
@@ -76,9 +78,47 @@ d3.json("../US_States_and_Teams.json").then((dataUSAEquipos) => {
           });
       }
 
+      // Función para actualizar las estadísticas en función de los estados seleccionados
+      function actualizarEstadisticas(estadosSeleccionados, año, opcion) {
+        // Limpiamos el contenido de la sección de estadísticas
+        const estadisticasContainer = d3.select("#estadisticas-container");
+        estadisticasContainer.selectAll("*").remove();
+
+        // Recorremos los estados seleccionados
+        estadosSeleccionados.forEach((estado) => {
+          const equipos = dataUSAEquipos[estado];
+          if (equipos && equipos.length > 0) {
+            equipos.forEach((equipo) => {
+              const estadisticasEquipo = dataEquipos[equipo][año];
+
+              // Creamos un elemento para mostrar las estadísticas del equipo
+              const estadisticasElemento = estadisticasContainer
+                .append("div")
+                .attr("class", "estadisticas-equipo");
+
+              // Agregamos las estadísticas del equipo
+              estadisticasElemento.append("h3").text(equipo);
+              estadisticasElemento
+                .append("p")
+                .text(`Robos: ${estadisticasEquipo[opcion]}`);
+            });
+          } else {
+            // Si no hay equipos, mostramos un mensaje
+            const estadisticasElemento = estadisticasContainer
+              .append("div")
+              .attr("class", "estadisticas-equipo");
+
+            estadisticasElemento
+              .append("p")
+              .text("No hay equipos en este estado");
+          }
+        });
+      }
+
       // Genera las opciones del dropdown para los años desde 1980 hasta 2022
       const añoSelect = document.getElementById("año-select");
       const opcionSelect = document.getElementById("opcion-select");
+      let estadosSeleccionados = [];
 
       for (let año = 2022; año >= 1980; año--) {
         const option = document.createElement("option");
@@ -91,14 +131,15 @@ d3.json("../US_States_and_Teams.json").then((dataUSAEquipos) => {
         const añoSeleccionado = añoSelect.value;
         const opcionSeleccionada = opcionSelect.value;
         actualizarMapa(añoSeleccionado, opcionSeleccionada);
+        actualizarEstadisticas(estadosSeleccionados, añoSeleccionado, opcionSeleccionada)
       });
 
       opcionSelect.addEventListener("change", function () {
         const añoSeleccionado = añoSelect.value;
         const opcionSeleccionada = opcionSelect.value;
         actualizarMapa(añoSeleccionado, opcionSeleccionada);
+        actualizarEstadisticas(estadosSeleccionados, añoSeleccionado, opcionSeleccionada)
       });
-      
 
       // Dibuja cada estado usando los datos
       svg
@@ -129,6 +170,16 @@ d3.json("../US_States_and_Teams.json").then((dataUSAEquipos) => {
         .on("click", function (event, d) {
           // evento de click
           // Verifica el color actual del estado
+          // Verificamos si el estado ya está seleccionado
+          const nombreEstado = d.properties.name;
+          const index = estadosSeleccionados.indexOf(nombreEstado);
+          if (index === -1) {
+            // Si no está seleccionado, lo agregamos
+            estadosSeleccionados.push(nombreEstado);
+          } else {
+            // Si está seleccionado, lo eliminamos
+            estadosSeleccionados.splice(index, 1);
+          }
           const añoActual = añoSelect.value;
           const opcionActual = opcionSelect.value;
           const currentColor = d3.select(this).style("fill");
@@ -137,8 +188,6 @@ d3.json("../US_States_and_Teams.json").then((dataUSAEquipos) => {
             d3.select(this).style("fill", function (d) {
               let equipoMaxValor = null;
               let maxValor = 0;
-
-              const nombreEstado = d.properties.name;
               const equipos = dataUSAEquipos[nombreEstado];
               if (equipos && equipos.length > 0) {
                 // Busca el equipo con más valor en el año seleccionado
@@ -150,9 +199,21 @@ d3.json("../US_States_and_Teams.json").then((dataUSAEquipos) => {
                   }
                 });
 
-                const valor = dataEquipos[equipoMaxValor][añoActual][opcionActual];
+                // Actualizamos la sección de estadísticas
+                actualizarEstadisticas(
+                  estadosSeleccionados,
+                  añoActual,
+                  opcionActual
+                );
+                const valor =
+                  dataEquipos[equipoMaxValor][añoActual][opcionActual];
                 return colorScale(valor);
               }
+              actualizarEstadisticas(
+                estadosSeleccionados,
+                añoActual,
+                opcionActual
+              );
               return "rgb(173,216,230)";
             });
 
@@ -161,6 +222,11 @@ d3.json("../US_States_and_Teams.json").then((dataUSAEquipos) => {
           } else {
             // Si el estado no está seleccionado, cambia su color a rojo
             d3.select(this).style("fill", "rgb(65,105,225)");
+            actualizarEstadisticas(
+              estadosSeleccionados,
+              añoActual,
+              opcionActual
+            );
           }
         });
       // LLama a la función para actualizar el mapa con los valores por defecto (PUNTOS 2022)

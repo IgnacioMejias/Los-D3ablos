@@ -58,7 +58,7 @@ for team_name in team_names:
     
 
     # Agrupa los puntos por temporada
-    data_per_season = df.groupby('YEAR').agg({'PTS': 'sum', 'REB': 'sum', 'STL': 'sum'}).to_dict(orient='index')
+    data_per_season = df.groupby('YEAR').agg({'PTS': 'sum', 'REB': 'sum', 'BLK': 'sum', 'STL': 'sum'}).to_dict(orient='index')
 
     # Elimina el número después del guion en las claves del diccionario
     modified_data_per_season = {}

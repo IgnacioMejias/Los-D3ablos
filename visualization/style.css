@@ -2,8 +2,7 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: flex-end;
-  margin-right: 400px;
+  justify-content: center;
 }
 
 .dropdown {
@@ -22,4 +21,17 @@
 
 .dropdown select:focus {
   outline: none;
+}
+
+.primera-segunda-vis {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.map-container {
+  position: relative;
+  top: 0;
+  left: 0;
 }
