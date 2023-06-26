@@ -1,0 +1,25 @@
+.container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  margin-right: 400px;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+  margin-top: 20px;
+}
+
+.dropdown select {
+  margin-right: 20px;
+  padding: 5px 20px;
+  background-color: #ffffff;
+  border: 1px solid #000000;
+  cursor: pointer;
+}
+
+.dropdown select:focus {
+  outline: none;
+}

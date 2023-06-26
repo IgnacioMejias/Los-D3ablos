@@ -1,39 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
     <script src="https://d3js.org/d3.v7.js"></script>
     <script src="https://unpkg.com/topojson-client@3"></script>
     <title>BALL IS LIFE</title>
-</head>
-<body>
+  </head>
+  <body>
+    <h1>USA STATES VISUALIZER</h1>
     <div class="container">
-        <h1> USA STATES VISUALIZER </h1>
-
-        <h2>Visualization 1 - </h2>
-        <div id="generator">
-            <button id="generate-data">Generate random data</button>
-        </div>
-        <div id="vis-1">
-        </div>
-        <h2>Visualization 2 - </h2>
-        <div>
-            <span>Order by</span>
-
-        </div>
-        <div id="vis-2">
-            <h4 id="selected"></h4>
-        </div>
-
-        <div id="multilineChart"></div>
+      <div class="dropdown">
+        <select id="año-select"></select>
+      </div>
+      <div class="dropdown">
+        <select id="option-select">
+          <option value="puntos">Puntos</option>
+          <option value="asistencias">Asistencias</option>
+          <option value="rebotes">Rebotes</option>
+        </select>
+      </div>
+      </div>
     </div>
-    <script src="multilineChart.js"></script>
+    <!-- <script src="multilineChart.js"></script> -->
     <script src="main.js"></script>
     <script src="configuration.js"></script>
-</body>
-
+  </body>
 </html>
