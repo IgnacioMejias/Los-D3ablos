@@ -41,7 +41,7 @@ team_names = [
 all_teams = teams.get_teams()
 
 # Crea un diccionario vacío para almacenar los datos de puntos por temporada de cada equipo
-points_per_season_by_team = {}
+data_per_season_by_team = {}
 
 # Itera sobre los equipos en tu lista
 for team_name in team_names:
@@ -54,19 +54,23 @@ for team_name in team_names:
     # Obtiene los datos en formato DataFrame
     df = team_stats.get_data_frames()[0]
     df = df[df['YEAR'] >= '1980']
+    print(df)
+    
 
     # Agrupa los puntos por temporada
-    points_per_season = df.groupby('YEAR')['PTS'].sum()
+    data_per_season = df.groupby('YEAR').agg({'PTS': 'sum', 'REB': 'sum', 'STL': 'sum'}).to_dict(orient='index')
 
     # Elimina el número después del guion en las claves del diccionario
-    modified_points_per_season = {}
-    for key, value in points_per_season.items():
+    modified_data_per_season = {}
+    for key, value in data_per_season.items():
         modified_key = key.split('-')[0]
-        modified_points_per_season[modified_key] = value
+        modified_data_per_season[modified_key] = value
 
     # Almacena los datos en el diccionario principal
-    points_per_season_by_team[team_name] = modified_points_per_season
+    data_per_season_by_team[team_name] = modified_data_per_season
 
 # Escribe los datos en un archivo JSON con formato más legible para humanos
-with open('team_points_per_season.json', 'w') as f:
-    json.dump(points_per_season_by_team, f, indent=4)
+with open('team_data_per_season.json', 'w') as f:
+    json.dump(data_per_season_by_team, f, indent=4)
+
+print('Datos almacenados en team_data_per_season.json')

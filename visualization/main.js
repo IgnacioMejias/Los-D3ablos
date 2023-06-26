@@ -1,7 +1,7 @@
 // Cargamos los datos de estados y equipos
 d3.json("../US_States_and_Teams.json").then((dataUSAEquipos) => {
   // Cargamos los datos de los equipos
-  d3.json("../team_points_per_season.json").then((dataEquipos) => {
+  d3.json("../team_data_per_season.json").then((dataEquipos) => {
     d3.json("../dataset/usa.json").then((datosTopo) => {
       const datos = topojson.feature(datosTopo, datosTopo.objects.states);
 
@@ -17,24 +17,21 @@ d3.json("../US_States_and_Teams.json").then((dataUSAEquipos) => {
         .attr("height", height);
 
       // Define la escala de color con valores iniciales
-      let minPuntos = 0;
-      let maxPuntos = 10000; // Valores predeterminados
+      let minValor = 0;
+      let maxValor = 20000; // Valores predeterminados
 
-      // Función para calcular el valor mínimo y máximo de los puntos por temporada
-      function calcularDominio(año) {
-        const puntosPorTemporada = Object.values(dataEquipos).map(
-          (equipo) => equipo[año]
+      // Función para calcular el valor mínimo y máximo de los valores por temporada
+      function calcularDominio(año, opcion) {
+        const valorPorTemporada = Object.values(dataEquipos).map(
+          (equipo) => equipo[año][opcion]
         );
-        minPuntos = d3.min(puntosPorTemporada);
-        maxPuntos = d3.max(puntosPorTemporada);
-        console.log(minPuntos, maxPuntos);
+        minValor = d3.min(valorPorTemporada);
+        maxValor = d3.max(valorPorTemporada);
+        console.log(minValor, maxValor);
       }
 
       // Define la escala de color
-      const colorScale = d3
-        .scaleSequential()
-        .interpolator(d3.interpolateOrRd) // Utiliza el esquema de colores rojo-azul
-        .domain([7476, 8649]); // Rango de puntos por temporada
+      const colorScale = d3.scaleSequential().interpolator(d3.interpolateOrRd); // Utiliza el esquema de colores rojo-azul
 
       // Define la proyección
       const projection = d3
@@ -47,32 +44,32 @@ d3.json("../US_States_and_Teams.json").then((dataUSAEquipos) => {
 
       // Función para actualizar el mapa en función del año seleccionado
       function actualizarMapa(año, opcion) {
-        // Calcula el dominio de los puntos por temporada
-        calcularDominio(año);
-        colorScale.domain([minPuntos, maxPuntos]);
+        // Calcula el dominio de los valores por temporada
+        calcularDominio(año, opcion);
+        colorScale.domain([minValor, maxValor]);
 
         svg
           .selectAll("path")
           .data(datos.features)
           .style("fill", function (d) {
-            let equipoMaxPuntos = null;
-            let maxPuntos = 0;
+            let equipoMaxValor = null;
+            let maxValor = 0;
 
             const nombreEstado = d.properties.name;
             const equipos = dataUSAEquipos[nombreEstado];
             if (equipos && equipos.length > 0) {
-              // Busca el equipo con más puntos en el año seleccionado
+              // Busca el equipo con más valor en el año seleccionado
               equipos.forEach((equipo) => {
-                const puntos = dataEquipos[equipo][año];
-                if (puntos && puntos > maxPuntos) {
-                  equipoMaxPuntos = equipo;
-                  maxPuntos = puntos;
+                const valor = dataEquipos[equipo][año][opcion];
+                if (valor && valor > maxValor) {
+                  equipoMaxValor = equipo;
+                  maxValor = valor;
                 }
               });
 
-              if (equipoMaxPuntos) {
-                const puntos = dataEquipos[equipoMaxPuntos][año];
-                return colorScale(puntos);
+              if (equipoMaxValor) {
+                const valor = dataEquipos[equipoMaxValor][año][opcion];
+                return colorScale(valor);
               }
             }
             return "rgb(173,216,230)";
@@ -81,6 +78,8 @@ d3.json("../US_States_and_Teams.json").then((dataUSAEquipos) => {
 
       // Genera las opciones del dropdown para los años desde 1980 hasta 2022
       const añoSelect = document.getElementById("año-select");
+      const opcionSelect = document.getElementById("opcion-select");
+
       for (let año = 2022; año >= 1980; año--) {
         const option = document.createElement("option");
         option.value = año;
@@ -88,13 +87,18 @@ d3.json("../US_States_and_Teams.json").then((dataUSAEquipos) => {
         añoSelect.appendChild(option);
       }
 
-      // Llamada inicial para mostrar los datos del año 2022
-      actualizarMapa("2022", "puntos");
-
       añoSelect.addEventListener("change", function () {
         const añoSeleccionado = añoSelect.value;
-        actualizarMapa(añoSeleccionado, "puntos");
+        const opcionSeleccionada = opcionSelect.value;
+        actualizarMapa(añoSeleccionado, opcionSeleccionada);
       });
+
+      opcionSelect.addEventListener("change", function () {
+        const añoSeleccionado = añoSelect.value;
+        const opcionSeleccionada = opcionSelect.value;
+        actualizarMapa(añoSeleccionado, opcionSeleccionada);
+      });
+      
 
       // Dibuja cada estado usando los datos
       svg
@@ -126,27 +130,28 @@ d3.json("../US_States_and_Teams.json").then((dataUSAEquipos) => {
           // evento de click
           // Verifica el color actual del estado
           const añoActual = añoSelect.value;
+          const opcionActual = opcionSelect.value;
           const currentColor = d3.select(this).style("fill");
           if (currentColor === "rgb(65, 105, 225)") {
             // Si el estado ya está seleccionado, cambia su color de vuelta al color original
             d3.select(this).style("fill", function (d) {
-              let equipoMaxPuntos = null;
-              let maxPuntos = 0;
+              let equipoMaxValor = null;
+              let maxValor = 0;
 
               const nombreEstado = d.properties.name;
               const equipos = dataUSAEquipos[nombreEstado];
               if (equipos && equipos.length > 0) {
-                // Busca el equipo con más puntos en el año seleccionado
+                // Busca el equipo con más valor en el año seleccionado
                 equipos.forEach((equipo) => {
-                  const puntos = dataEquipos[equipo][añoActual];
-                  if (puntos > maxPuntos) {
-                    equipoMaxPuntos = equipo;
-                    maxPuntos = puntos;
+                  const valor = dataEquipos[equipo][añoActual][opcionActual];
+                  if (valor > maxValor) {
+                    equipoMaxValor = equipo;
+                    maxValor = valor;
                   }
                 });
 
-                const puntos = dataEquipos[equipoMaxPuntos][añoActual];
-                return colorScale(puntos);
+                const valor = dataEquipos[equipoMaxValor][añoActual][opcionActual];
+                return colorScale(valor);
               }
               return "rgb(173,216,230)";
             });
@@ -158,7 +163,8 @@ d3.json("../US_States_and_Teams.json").then((dataUSAEquipos) => {
             d3.select(this).style("fill", "rgb(65,105,225)");
           }
         });
-      actualizarMapa("2022", "puntos");
+      // LLama a la función para actualizar el mapa con los valores por defecto (PUNTOS 2022)
+      actualizarMapa("2022", "PTS");
     });
   });
 });
