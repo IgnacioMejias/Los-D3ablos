@@ -1,7 +1,7 @@
 // Cargamos los datos de estados y equipos
-d3.json("../US_States_and_Teams.json").then((dataUSAEquipos) => {
+d3.json("../dataset/US_States_and_Teams.json").then((dataUSAEquipos) => {
   // Cargamos los datos de los equipos
-  d3.json("../team_data_per_season.json").then((dataEquipos) => {
+  d3.json("../dataset/team_data_per_season.json").then((dataEquipos) => {
     d3.json("../dataset/usa.json").then((datosTopo) => {
       const datos = topojson.feature(datosTopo, datosTopo.objects.states);
 

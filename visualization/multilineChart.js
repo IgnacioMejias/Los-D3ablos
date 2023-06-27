@@ -140,6 +140,7 @@ svg.call(zoom);
 // dibujar las líneas
 document.getElementById("playButton").addEventListener("click", function() {
 
+    if (lineGroup.selectAll(".line").empty()) {
     processedData.forEach(function(playerData, i) {
         //let path = svg.append("path")
         let path = lineGroup.append("path")
@@ -200,6 +201,19 @@ document.getElementById("playButton").addEventListener("click", function() {
                 svg.transition().duration(1000).call(zoom.transform, transformacionZoom);
             });
     });
+    }
 });
+const reinicio = d3.select("#replayButton");
+reinicio.on("click", () => {
+    // Obtenemos una transformación identidad (x=0, y=0, k=1)
+    const transformacion = d3.zoomIdentity;
+    // De forma elegante (con transition) aplicamos esta transformación
+    svg.transition().duration(1000).call(zoom.transform, transformacion);
 
+    // Selecciona todas las líneas y elimínalas
+    d3.selectAll(".line").remove();
+
+    // Selecciona todos los textos de la leyenda y elimínalos
+    d3.selectAll(".leyenda").remove();
+  });
 });
