@@ -15,7 +15,7 @@ d3.json("../US_States_and_Teams.json").then((dataUSAEquipos) => {
 
       // Define el tamaño del SVG
       const width = 960;
-      const height = 600;
+      const height = 460;
 
       const mapContainer = d3.select("#map-container");
 
@@ -32,6 +32,7 @@ d3.json("../US_States_and_Teams.json").then((dataUSAEquipos) => {
 
       // Función para calcular el valor mínimo y máximo de los valores por temporada
       function calcularDominio(año, opcion) {
+        console.log(año, opcion)
         const valorPorTemporada = Object.values(dataEquipos).map(
           (equipo) => equipo[año][opcion]
         );
@@ -420,7 +421,7 @@ d3.json("../US_States_and_Teams.json").then((dataUSAEquipos) => {
                 añoActual,
                 opcionActual
               );
-              mostrarMensajeEstado(``);
+              mostrarMensajeEstado(`¡Presiona un estado para ver sus equipos!`);
               return "rgb(173,216,230)";
             });
 
