@@ -32,7 +32,7 @@ d3.json("../US_States_and_Teams.json").then((dataUSAEquipos) => {
 
       // Función para calcular el valor mínimo y máximo de los valores por temporada
       function calcularDominio(año, opcion) {
-        console.log(año, opcion)
+        console.log(año, opcion);
         const valorPorTemporada = Object.values(dataEquipos).map(
           (equipo) => equipo[año][opcion]
         );
@@ -318,6 +318,12 @@ d3.json("../US_States_and_Teams.json").then((dataUSAEquipos) => {
       // Genera las opciones del dropdown para los años desde 1980 hasta 2022
       const añoSelect = document.getElementById("año-select");
       const opcionSelect = document.getElementById("opcion-select");
+      const botonSeleccionar = document.getElementById(
+        "boton-seleccionar-todo"
+      );
+      const botonDeseleccionar = document.getElementById(
+        "boton-borrar-seleccion"
+      );
 
       for (let año = 2022; año >= 1980; año--) {
         const option = document.createElement("option");
@@ -346,6 +352,73 @@ d3.json("../US_States_and_Teams.json").then((dataUSAEquipos) => {
           añoSeleccionado,
           opcionSeleccionada
         );
+      });
+
+      botonSeleccionar.addEventListener("click", function () {
+        // Selecciona todos los estados
+        estadosSeleccionados = [];
+        const añoSeleccionado = añoSelect.value;
+        const opcionSeleccionada = opcionSelect.value;
+        var todosLosEstados = Object.keys(dataUSAEquipos);
+        estadosSeleccionados = todosLosEstados;
+
+        d3.selectAll("path")
+          .data(datos.features)
+          .style("fill", function (d) {
+            var nombreEstado = d.properties.name;
+            if (estadosSeleccionados.includes(nombreEstado)) {
+              return "rgb(65,105,225)";
+            } else {
+              return "rgb(173,216,230)";
+            }
+          });
+        actualizarEstadisticas(
+          estadosSeleccionados,
+          añoSeleccionado,
+          opcionSeleccionada
+        );
+      });
+
+      botonDeseleccionar.addEventListener("click", function () {
+        if (estadosSeleccionados.length > 0) {
+          // Deseleccionar todos los estados
+          const añoSeleccionado = añoSelect.value;
+          const opcionSeleccionada = opcionSelect.value;
+          var todosLosEstados = Object.keys(dataUSAEquipos);
+          d3.selectAll("path")
+            .data(datos.features)
+            .style("fill", function (d) {
+              const nombreEstado = d.properties.name;
+              if (todosLosEstados.includes(nombreEstado)) {
+                let equipoMaxValor = null;
+                let maxValor = 0;
+                const equipos = dataUSAEquipos[nombreEstado];
+                if (equipos && equipos.length > 0) {
+                  equipos.forEach((equipo) => {
+                    const valor =
+                      dataEquipos[equipo][añoSeleccionado][opcionSeleccionada];
+                    if (valor > maxValor) {
+                      equipoMaxValor = equipo;
+                      maxValor = valor;
+                    }
+                  });
+                  const valor =
+                    dataEquipos[equipoMaxValor][añoSeleccionado][
+                      opcionSeleccionada
+                    ];
+                  return colorScale(valor);
+                }
+              }
+              return "rgb(173,216,230)";
+            });
+
+          estadosSeleccionados = [];
+          actualizarEstadisticas(
+            estadosSeleccionados,
+            añoSeleccionado,
+            opcionSeleccionada
+          );
+        }
       });
 
       // Dibuja cada estado usando los datos
