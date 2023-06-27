@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>NBA visualizer report</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Informe de visualizaciones de la NBA</h1>
+
+        <div class="section">
+            <h2>Primer Nivel: Caracterización de Dominio</h2>
+            <div>
+                <h3>Contexto de los Datos</h3>
+                <p>Para la realización del proyecto, se utilizarán datos de variadas fuentes. La fuente principal de información será
+                    la <a href="https://github.com/swar/nba_api" target="_blank">API</a> de la NBA, la cual contiene información de los jugadores, equipos, partidos, entre otros.
+                    Para usarla, se harán peticiones a la API, se procesarán los datos, y se guardarán los datos relevantes en un json. 
+                </p>
+                <p>Para el uso del mapa de Estados Unidos, se encontró un <a href="https://github.com/topojson/us-atlas" target="_blank">repositorio</a> 
+                    con un archivo topojson que contiene la información necesaria para dibujar el mapa.
+                </p>
+                <p>Decidimos basar nuestro proyecto en la NBA, ya que existen muchos datos disponibles, lo que nos permite realizar visualizaciones
+                    de largo alcance, tanto temporalmente como en cuanto a la variedad de datos.
+                </p>
+
+            </div>
+            <div>
+                <h3>Descripción de la Situación a Modelar</h3>
+                <p>Respecto a lo que buscamos modelar, tenemos tres ideas de visualizaciones, una independiente, y las otras son vistas coordinadas. 
+                    La primera visualización consistirá en un gráfico multilínea que transicione a lo largo del tiempo, y grafica cómo evolucionan 
+                    los puntos de los 10 mayores anotadores en fase regular, de todos los tiempos. 
+                </p>
+                <p>La segunda visualización consistirá en un mapa de Estados Unidos, el cual funcionará como un mapa de coropletas, y la intensidad del color codificará 
+                    puntos, rebotes, bloqueos y robos, dependiendo de la opción que escoga el usuario. Además, se podrá variar el año en el que se basa el mapa, 
+                    y podrá seleccionar múltiples estados, sumándose las estadísticas de cada uno dinámicamente, o restándose si es que deselecciona. 
+                </p>
+                <p>La tercera visualización aparecerá al presionar un estado (o múltiples) en el mapa. Al hacerlo, se mostrará con un gráfico de barras 
+                    la estadística seleccionada, en el año seleccionado, para los equipos pertenecientes a el/los estados. 
+                </p>
+                </p>
+                <p>Con estas visualizaciones pretendemos ejemplificar gráficamente la evolución de los puntos de los mejores anotadores de la NBA, y 
+                    cómo hay algunos que logran muy rápido llegar a la cima, y otros que se mantienen consistentes a lo largo de los años. 
+                    También, buscamos  mostrar la distribución de fanáticos de la NBA en Estados Unidos, y cómo esta se relaciona (si es que se relaciona) con la 
+                    cantidad de puntos anotados por estado. 
+                </p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Segundo Nivel: Abstracción de Datos y Tareas</h2>
+            <div>
+                <h3>Abstracción de Datos</h3>
+                <p>Para la realización del proyecto, se utilizarán datos de variadas fuentes. La fuente principal de información será
+                    la <a href="https://github.com/swar/nba_api" target="_blank">API</a> de la NBA, la cual contiene información de los jugadores, equipos, partidos, entre otros.
+                    Para usarla, se harán peticiones a la API, se procesarán los datos, y se guardarán los datos relevantes en un json. 
+                </p>
+            </div>
+            <div>
+                <h3>Abstracción de Tareas</h3>
+                <p> A continuación, se describen las tres tareas fundamentales para caracterizar el dominio.  
+                </p>
+            </div>
+            <ul>
+                <li> <b>Tarea 1: Identificar y almacenar correctamente jugadores y sus puntos. </b> Esta tarea requiere parear debidamente 
+                a un jugador con sus puntos a lo largo de las temporadas en las que ha jugado, logrando enfrentar escenarios como la no existencia
+                del jugador contemporáneo en épocas antiguas, o la obsolescencia de jugadores antiguos en temporadas recientes.</li>
+                <li> <b>Tarea 2: Explorar los Estados y analizar la viabilidad de la propuesta.</b> En Estados Unidos, algunos estados poseen más
+                de un equipo, y en otros no existe ninguno. Esta tarea consiste en estudiar cómo lidiar con la multiplicidad de equipos por estado, 
+                y el tratamiento al mapa en caso de que no posea equipos en ese estado.</li>
+                <li><b>Tarea 3: Analizar datos relevantes para coordinar las vistas, y la forma de visualizarlos.</b> Esta tarea busca encontrar aquella información que un 
+                usuario espararía encontrarse al presionar sobre un estado en nuestro mapa de coropletas. </li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>Tercer Nivel: Codificación Visual y de Interacción</h2>
+            <p>Aquí puedes empezar a describir la codificación visual y de interacción de tu proyecto.</p>
+        </div>
+    </div>
+</body>
+</html>
