@@ -36,6 +36,13 @@ d3.json("../dataset/players_data.json").then(function(data) {
         }
         processedData.push(playerData);
     }
+    processedData.push(playerData);
+  }
+
+  // establecer los márgenes y las dimensiones del gráfico
+  let margin = { top: 20, right: 80, bottom: 30, left: 50 };
+  let width = 960 - margin.left - margin.right;
+  let height = 500 - margin.top - margin.bottom;
 
     // establecer los márgenes y las dimensiones del gráfico
     let margin = {top: 20, right: 80, bottom: 30, left: 50};
@@ -202,4 +209,32 @@ document.getElementById("playButton").addEventListener("click", function() {
     });
 });
 
+    let legend = svg
+      .append("text")
+      .datum({ name: playerData.name, value: playerData.values[0] })
+      .attr("x", 3)
+      .attr("dy", "0.35em")
+      .style("font", "10px sans-serif")
+      .text(function (d) {
+        return d.name;
+      });
+
+    legend
+      .transition()
+      .duration(1000)
+      .ease(d3.easeLinear)
+      .attrTween("transform", function (d) {
+        let interpolate = d3.interpolateNumber(0, playerData.values.length - 1);
+        return function (t) {
+          let seasonIndex = Math.round(interpolate(t));
+          return (
+            "translate(" +
+            x(playerData.values[seasonIndex].season) +
+            "," +
+            y(playerData.values[seasonIndex].points) +
+            ")"
+          );
+        };
+      });
+  });
 });

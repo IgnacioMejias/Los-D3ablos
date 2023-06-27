@@ -1,40 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
     <script src="https://d3js.org/d3.v7.js"></script>
     <script src="https://unpkg.com/topojson-client@3"></script>
     <title>BALL IS LIFE</title>
-</head>
-<body>
+  </head>
+  <body>
+    <h1>USA STATES VISUALIZER</h1>
     <div class="container">
-        <h1> USA STATES VISUALIZER </h1>
-
-        <h2>Visualization 1 - </h2>
-        <button id="playButton">Play</button>
-        <div id="generator">
-            <button id="generate-data">Generate random data</button>
-        </div>
-        <div id="vis-1">
-        </div>
-        <h2>Visualization 2 - </h2>
-        <div>
-            <span>Order by</span>
-
-        </div>
-        <div id="vis-2">
-            <h4 id="selected"></h4>
-        </div>
-
-        <div id="multilineChart"></div>
+      <div class="dropdown">
+        <select id="año-select"></select>
+      </div>
+      <div class="dropdown">
+        <select id="opcion-select">
+          <option value="PTS">Puntos</option>
+          <option value="REB">Rebotes</option>
+          <option value="BLK">Bloqueos</option>
+          <option value="STL">Robos</Rption>
+        </select>
+      </div>
     </div>
+    <div class="primera-segunda-vis">     
+      <div class="map-container" id="map-container"></div>
+      <div class="stats-container" id="estadisticas-container"></div>
+    </div>
+    <h3 id="mensaje-estado"></h3>
+<button id="playButton">Play</button>
+<div id="multilineChart"></div>
     <script src="multilineChart.js"></script>
     <script src="main.js"></script>
     <script src="configuration.js"></script>
-</body>
 
+  </body>
 </html>
