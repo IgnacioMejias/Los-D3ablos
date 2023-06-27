@@ -1,0 +1,31 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+}
+.container {
+    width: 80%;
+    margin: auto;
+    padding: 20px;
+}
+h1, h2, h3 {
+    color: #333;
+}
+p, ul {
+    line-height: 1.6;
+    margin-bottom: 20px;
+    color: #666;
+}
+.section {
+    margin-bottom: 40px;
+}
+
+a:link, a:visited {
+    color: #337ab7;
+    text-decoration: none;
+}
+a:hover, a:active {
+    color: #23527c;
+    text-decoration: underline;
+}
