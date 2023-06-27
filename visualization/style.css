@@ -30,8 +30,13 @@
   justify-content: flex-start;
 }
 
-.map-container {
-  position: relative;
-  top: 0;
-  left: 0;
+.tooltip {
+  position: absolute;
+  text-align: center;
+  padding: 2px;
+  font: 12px sans-serif;
+  background: white;
+  border: 0.5px solid gray;
+  border-radius: 8px;
+  pointer-events: none;
 }

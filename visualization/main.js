@@ -5,6 +5,14 @@ d3.json("../US_States_and_Teams.json").then((dataUSAEquipos) => {
     d3.json("../dataset/usa.json").then((datosTopo) => {
       const datos = topojson.feature(datosTopo, datosTopo.objects.states);
 
+      const tooltip = d3
+        .select("#estadisticas-container")
+        .append("div")
+        .attr("class", "tooltip")
+        .style("opacity", 0);
+
+      let estadosSeleccionados = [];
+
       // Define el tamaño del SVG
       const width = 960;
       const height = 600;
@@ -29,7 +37,28 @@ d3.json("../US_States_and_Teams.json").then((dataUSAEquipos) => {
         );
         minValor = d3.min(valorPorTemporada);
         maxValor = d3.max(valorPorTemporada);
-        console.log(minValor, maxValor);
+      }
+
+      // Función para mostrar mensaje que estado no tieen equipos
+      function mostrarMensajeEstado(mensaje) {
+        const mensajeEstado = document.getElementById("mensaje-estado");
+        mensajeEstado.innerHTML = mensaje;
+      }
+
+      // Función auxiliar para obtener el nombre legible de la opción
+      function getNombreOpcion(opcion) {
+        switch (opcion) {
+          case "PTS":
+            return "Puntos";
+          case "BLK":
+            return "Bloqueos";
+          case "REB":
+            return "Rebotes";
+          case "STL":
+            return "Robos";
+          default:
+            return opcion;
+        }
       }
 
       // Define la escala de color
@@ -58,67 +87,236 @@ d3.json("../US_States_and_Teams.json").then((dataUSAEquipos) => {
             let maxValor = 0;
 
             const nombreEstado = d.properties.name;
-            const equipos = dataUSAEquipos[nombreEstado];
-            if (equipos && equipos.length > 0) {
-              // Busca el equipo con más valor en el año seleccionado
-              equipos.forEach((equipo) => {
-                const valor = dataEquipos[equipo][año][opcion];
-                if (valor && valor > maxValor) {
-                  equipoMaxValor = equipo;
-                  maxValor = valor;
-                }
-              });
+            const colorActual = d3.select(this).style("fill");
+            if (!(colorActual === "rgb(65, 105, 225)")) {
+              const equipos = dataUSAEquipos[nombreEstado];
+              if (equipos && equipos.length > 0) {
+                // Busca el equipo con más valor en el año seleccionado
+                equipos.forEach((equipo) => {
+                  const valor = dataEquipos[equipo][año][opcion];
+                  if (valor && valor > maxValor) {
+                    equipoMaxValor = equipo;
+                    maxValor = valor;
+                  }
+                });
 
-              if (equipoMaxValor) {
-                const valor = dataEquipos[equipoMaxValor][año][opcion];
-                return colorScale(valor);
+                if (equipoMaxValor) {
+                  const valor = dataEquipos[equipoMaxValor][año][opcion];
+                  return colorScale(valor);
+                }
               }
+              return "rgb(173,216,230)";
+            } else {
+              return colorActual;
             }
-            return "rgb(173,216,230)";
           });
       }
 
+      const WIDTH = 700;
+      const HEIGHT = 600;
+      const MARGIN = {
+        top: 70,
+        bottom: 160,
+        left: 70,
+        right: 30,
+      };
+
+      const HEIGHTVIS = HEIGHT - MARGIN.top - MARGIN.bottom;
+      const WIDTHVIS = WIDTH - MARGIN.left - MARGIN.right;
+
+      // Creamos el svg
+      const grafico = d3
+        .select("#estadisticas-container")
+        .append("svg")
+        .attr("id", "estadisticas-svg")
+        .attr("width", WIDTH)
+        .attr("height", HEIGHT);
+
+      // Creamos un contenedor específico para cada eje y la visualización
+      const contenedorEjeY = grafico
+        .append("g")
+        .attr("id", "contenedor-eje-y")
+        .attr("transform", `translate(${MARGIN.left}, ${MARGIN.top})`);
+
+      const contenedorEjeX = grafico
+        .append("g")
+        .attr("id", "contenedor-eje-x")
+        .attr(
+          "transform",
+          `translate(${MARGIN.left}, ${HEIGHTVIS + MARGIN.top})`
+        );
+
+      const contenedorVis = grafico
+        .append("g")
+        .attr("id", "contenedor-vis")
+        .attr("transform", `translate(${MARGIN.left}, ${MARGIN.top})`);
+
       // Función para actualizar las estadísticas en función de los estados seleccionados
       function actualizarEstadisticas(estadosSeleccionados, año, opcion) {
-        // Limpiamos el contenido de la sección de estadísticas
-        const estadisticasContainer = d3.select("#estadisticas-container");
-        estadisticasContainer.selectAll("*").remove();
+        let vacio = false;
+        if (estadosSeleccionados.length === 0) {
+          vacio = true;
+        }
+        const equiposSeleccionados = [];
 
-        // Recorremos los estados seleccionados
+        // Obtiene los equipos de los estados seleccionados
         estadosSeleccionados.forEach((estado) => {
           const equipos = dataUSAEquipos[estado];
           if (equipos && equipos.length > 0) {
             equipos.forEach((equipo) => {
-              const estadisticasEquipo = dataEquipos[equipo][año];
-
-              // Creamos un elemento para mostrar las estadísticas del equipo
-              const estadisticasElemento = estadisticasContainer
-                .append("div")
-                .attr("class", "estadisticas-equipo");
-
-              // Agregamos las estadísticas del equipo
-              estadisticasElemento.append("h3").text(equipo);
-              estadisticasElemento
-                .append("p")
-                .text(`Robos: ${estadisticasEquipo[opcion]}`);
+              equiposSeleccionados.push(equipo);
             });
           } else {
-            // Si no hay equipos, mostramos un mensaje
-            const estadisticasElemento = estadisticasContainer
-              .append("div")
-              .attr("class", "estadisticas-equipo");
-
-            estadisticasElemento
-              .append("p")
-              .text("No hay equipos en este estado");
+            mostrarMensajeEstado(
+              `El estado ${estado} no tiene equipos en la NBA`
+            );
           }
         });
+
+        const datosEquiposSeleccionados = {};
+
+        // Obtiene los datos de los equipos seleccionados
+        equiposSeleccionados.forEach((equipo) => {
+          datosEquiposSeleccionados[equipo] = dataEquipos[equipo];
+        });
+
+        // Obtiene los valores de los equipos seleccionados
+        const valorPorTemporada = equiposSeleccionados.map(
+          (equipo) => dataEquipos[equipo][año][opcion]
+        );
+
+        // Calcula el valor mínimo y máximo
+        const minValor = d3.min(valorPorTemporada);
+        const maxValor = d3.max(valorPorTemporada);
+
+        // Definimos una escala lineal para determinar la altura
+        const escalaAltura = d3
+          .scaleLinear()
+          .domain([maxValor / 2, maxValor * 1.05]) // Capaz cambiar por minValor
+          .range([0, HEIGHTVIS]);
+
+        const escalaY = d3
+          .scaleLinear()
+          .domain([maxValor / 2, maxValor * 1.05])
+          .range([HEIGHTVIS, 0]);
+
+        const ejeY = d3.axisLeft(escalaY);
+
+        contenedorEjeY
+          .transition()
+          .duration(500)
+          .call(ejeY)
+          .selectAll("line")
+          .attr("x1", WIDTHVIS)
+          .attr("stroke-dasharray", "5")
+          .attr("opacity", 0.5);
+
+        const escalaX = d3
+          .scaleBand()
+          .domain(equiposSeleccionados)
+          .rangeRound([0, WIDTHVIS])
+          .padding(0.5);
+
+        const ejeX = d3.axisBottom(escalaX);
+
+        contenedorEjeX
+          .transition()
+          .duration(500)
+          .call(ejeX)
+          .selectAll("text")
+          .attr("font-size", "14")
+          .attr("y", 6)
+          .attr("x", 15)
+          .attr("transform", "rotate(70)")
+          .attr("text-anchor", "start");
+
+        const barras = contenedorVis
+          .selectAll("rect")
+          .data(Object.keys(datosEquiposSeleccionados), (d) => d)
+          .join(
+            (enter) =>
+              enter
+                .append("rect")
+                .style("fill", function (d) {
+                  const valor = dataEquipos[d][año][opcion];
+                  return colorScale(valor);
+                })
+                .attr("y", HEIGHTVIS)
+                .attr("height", 0)
+                .attr("width", escalaX.bandwidth())
+                .attr("x", (d) => escalaX(d)),
+            (update) =>
+              update.style("fill", function (d) {
+                const valor = dataEquipos[d][año][opcion];
+                return colorScale(valor);
+              }),
+            (exit) =>
+              exit
+                .transition("salida")
+                .duration(500)
+                .attr("y", HEIGHTVIS)
+                .attr("height", 0)
+                .remove()
+          );
+
+        // Personalizamos según la información de los datos
+        barras
+          .transition("update")
+          .duration(500)
+          .attr("width", escalaX.bandwidth())
+          .attr("height", (d) => escalaAltura(dataEquipos[d][año][opcion]))
+          .attr("x", (d) => escalaX(d))
+          .attr("y", (d) => escalaY(dataEquipos[d][año][opcion]));
+
+        contenedorVis
+          .selectAll("rect")
+          .on("mousemove", (event, d) => {
+            tooltip.transition().duration(60).style("opacity", 0.9);
+            tooltip
+              .html(
+                `${getNombreOpcion(opcion)}: ${dataEquipos[d][año][opcion]}`
+              )
+              .style("left", event.pageX + 5 + "px")
+              .style("top", event.pageY - 20 + "px");
+          })
+          .on("mouseout", (event, d) => {
+            tooltip.transition().duration(500).style("opacity", 0);
+          });
+
+        // Agregamos el texto
+        contenedorVis.selectAll("#titulo-grafico").remove();
+        contenedorEjeY.selectAll("#titulo-eje").remove();
+
+        if (!vacio) {
+          const tituloEjeY = contenedorEjeY
+            .append("text")
+            .attr("id", "titulo-eje")
+            .attr("transform", "rotate(-90)")
+            .attr("x", -HEIGHTVIS / 2)
+            .attr("y", -50)
+            .attr("text-anchor", "middle")
+            .text(`${getNombreOpcion(opcion)}`)
+            .style("font-size", "14px")
+            .style("font-weight", "bold")
+            .style("fill", "black");
+
+          contenedorVis
+            .append("text")
+            .attr("id", "titulo-grafico")
+            .attr("x", WIDTHVIS / 2)
+            .attr("y", -30)
+            .attr("text-anchor", "middle")
+            .attr("font-size", "20")
+            .text(`Estadísticas de ${getNombreOpcion(opcion)} en ${año}`);
+        } else {
+          // Quiero quitar las líneas de los ejes, creo que se llaman domain
+          d3.selectAll("path.domain").remove();
+        }
       }
 
       // Genera las opciones del dropdown para los años desde 1980 hasta 2022
       const añoSelect = document.getElementById("año-select");
       const opcionSelect = document.getElementById("opcion-select");
-      let estadosSeleccionados = [];
 
       for (let año = 2022; año >= 1980; año--) {
         const option = document.createElement("option");
@@ -131,14 +329,22 @@ d3.json("../US_States_and_Teams.json").then((dataUSAEquipos) => {
         const añoSeleccionado = añoSelect.value;
         const opcionSeleccionada = opcionSelect.value;
         actualizarMapa(añoSeleccionado, opcionSeleccionada);
-        actualizarEstadisticas(estadosSeleccionados, añoSeleccionado, opcionSeleccionada)
+        actualizarEstadisticas(
+          estadosSeleccionados,
+          añoSeleccionado,
+          opcionSeleccionada
+        );
       });
 
       opcionSelect.addEventListener("change", function () {
         const añoSeleccionado = añoSelect.value;
         const opcionSeleccionada = opcionSelect.value;
         actualizarMapa(añoSeleccionado, opcionSeleccionada);
-        actualizarEstadisticas(estadosSeleccionados, añoSeleccionado, opcionSeleccionada)
+        actualizarEstadisticas(
+          estadosSeleccionados,
+          añoSeleccionado,
+          opcionSeleccionada
+        );
       });
 
       // Dibuja cada estado usando los datos
@@ -214,6 +420,7 @@ d3.json("../US_States_and_Teams.json").then((dataUSAEquipos) => {
                 añoActual,
                 opcionActual
               );
+              mostrarMensajeEstado(``);
               return "rgb(173,216,230)";
             });
 
