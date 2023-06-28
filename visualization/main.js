@@ -108,7 +108,8 @@ d3.json("../US_States_and_Teams.json").then((dataUSAEquipos) => {
                 if (equipoMaxValor) {
                   let valor = dataEquipos[equipoMaxValor][año][opcion];
                   if (valor === 0) {
-                    valor = Math.round(minValor * 1.002);
+                    // valor = Math.round(minValor * 0.8);
+                    return "rgb(169, 169, 169)";
                   }
                   return colorScale(valor);
                 }
@@ -199,35 +200,27 @@ d3.json("../US_States_and_Teams.json").then((dataUSAEquipos) => {
 
         const valoresMinimoMaximo = calcularDominio(año, opcion);
 
-        // Calcula el valor mínimo y máximo
-        // const minValor =
-        //   d3.min(valoresPorTemporadaFiltrados) ??
-        //   Math.round(valoresMinimoMaximo[0] * 1.002);
-        // const maxValor =
-        //   d3.max(valoresPorTemporadaFiltrados) ??
-        //   Math.round(valoresMinimoMaximo[1] * 1.002);Math.round(valoresMinimoMaximo[1] * 1.002)
-
         const minValor =
           d3.min(valoresPorTemporadaFiltrados) === undefined &&
           estadosSeleccionados.length !== 0
-            ? Math.round(valoresMinimoMaximo[0] * 1.002)
+            ? Math.round(valoresMinimoMaximo[0] * 0.8)
             : d3.min(valoresPorTemporadaFiltrados);
 
         const maxValor =
           d3.max(valoresPorTemporadaFiltrados) === undefined &&
           estadosSeleccionados.length !== 0
-            ? Math.round(valoresMinimoMaximo[1] * 1.002)
+            ? Math.round(valoresMinimoMaximo[1] * 0.8)
             : d3.max(valoresPorTemporadaFiltrados);
 
         // Definimos una escala lineal para determinar la altura
         const escalaAltura = d3
           .scaleLinear()
-          .domain([maxValor / 2, maxValor * 1.05]) // Capaz cambiar por minValor
+          .domain([minValor * 0.25, maxValor * 1.05]) // Capaz cambiar por minValor
           .range([0, HEIGHTVIS]);
 
         const escalaY = d3
           .scaleLinear()
-          .domain([maxValor / 2, maxValor * 1.05])
+          .domain([minValor * 0.25, maxValor * 1.05])
           .range([HEIGHTVIS, 0]);
 
         const ejeY = d3.axisLeft(escalaY);
@@ -270,7 +263,8 @@ d3.json("../US_States_and_Teams.json").then((dataUSAEquipos) => {
                 .style("fill", function (d) {
                   let valor = dataEquipos[d][año][opcion];
                   if (valor === 0) {
-                    valor = Math.round(valoresMinimoMaximo[0] * 1.002);
+                    // valor = Math.round(valoresMinimoMaximo[0] * 0.8);
+                    return "rgb(169, 169, 169)";
                   }
                   return colorScale(valor);
                 })
@@ -282,7 +276,8 @@ d3.json("../US_States_and_Teams.json").then((dataUSAEquipos) => {
               update.style("fill", function (d) {
                 let valor = dataEquipos[d][año][opcion];
                 if (valor === 0) {
-                  valor = Math.round(valoresMinimoMaximo[0] * 1.002);
+                  // valor = Math.round(valoresMinimoMaximo[0] * 0.8);
+                  return "rgb(169, 169, 169)";
                 }
                 return colorScale(valor);
               }),
@@ -303,7 +298,9 @@ d3.json("../US_States_and_Teams.json").then((dataUSAEquipos) => {
           .attr("height", (d) => {
             let valor = dataEquipos[d][año][opcion];
             if (valor === 0) {
-              valor = Math.round(valoresMinimoMaximo[0] * 1.002);
+              
+              valor = Math.round(valoresMinimoMaximo[0] * 0.9);
+              
             }
             return escalaAltura(valor);
           })
@@ -311,7 +308,7 @@ d3.json("../US_States_and_Teams.json").then((dataUSAEquipos) => {
           .attr("y", (d) => {
             let valor = dataEquipos[d][año][opcion];
             if (valor === 0) {
-              valor = Math.round(valoresMinimoMaximo[0] * 1.002);
+              valor = Math.round(valoresMinimoMaximo[0] * 0.9);
             }
             return escalaY(valor);
           });
@@ -322,7 +319,7 @@ d3.json("../US_States_and_Teams.json").then((dataUSAEquipos) => {
             tooltip.transition().duration(60).style("opacity", 0.9);
             const valor = dataEquipos[d][año][opcion];
             const valorMostrar =
-              valor === 0 ? Math.round(valoresMinimoMaximo[0] * 1.002) : valor;
+              valor === 0 ? Math.round(valoresMinimoMaximo[0] * 0.9) : valor;
             tooltip
               .html(`${getNombreOpcion(opcion)}: ${valorMostrar}`)
               .style("left", event.pageX + 5 + "px")
@@ -454,6 +451,11 @@ d3.json("../US_States_and_Teams.json").then((dataUSAEquipos) => {
                     dataEquipos[equipoMaxValor][añoSeleccionado][
                       opcionSeleccionada
                     ];
+
+                  if (valor === 0) {
+                    // return colorScale(minValor * 0.8);
+                    return "rgb(169, 169, 169)";
+                  }
                   return colorScale(valor);
                 }
               }
@@ -537,7 +539,8 @@ d3.json("../US_States_and_Teams.json").then((dataUSAEquipos) => {
                   dataEquipos[equipoMaxValor][añoActual][opcionActual];
 
                 if (valor === 0) {
-                  return colorScale(minValor * 1.002);
+                  // return colorScale(minValor * 0.8);
+                  return "rgb(169, 169, 169)";
                 }
                 return colorScale(valor);
               }
