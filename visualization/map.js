@@ -486,7 +486,7 @@ d3.json("../dataset/US_States_and_Teams.json").then((dataUSAEquipos) => {
           svg
             .append("text")
             .attr("x", 600)
-            .attr("y", 100)
+            .attr("y", 50)
             .text(d.properties.name)
             .attr("font-family", "sans-serif")
             .attr("font-size", "20px")

@@ -11,7 +11,7 @@ botonSeguir.addEventListener("click", () => {
   terceraSeccion.scrollIntoView({ behavior: "smooth" });
 });
 
-// Animación inicial
+// Animación inicial (Nos basamos en el código del proyecto de Francisco Guiñez)
 d3.select(".boton-empezar").style("opacity", 0);
 const descripcionTexto =
   "Explora el apasionante mundo de la NBA a través de nuestro mapa ninteractivo. Descubre las estadísticas de puntos, rebotes, bloqueos y robos de cada equipo de Estados Unidos, conéctandolos directamente con la región que representan. Además, conoce a los 10 máximos anotadores en la historia del juego. Sumérgete en los datos y desvela los secretos del baloncesto en nuestra plataforma especializada en el análisis estadístico de la NBA.";
@@ -37,21 +37,21 @@ welcomeText.style("width", `${textWidth}px`);
 welcomeText.style("height", `${textHeight}px`);
 
 // Animación inicial
-const title = welcomeText.append("h3").style("font-size", "1.5rem");
+const text = welcomeText.append("h3").style("font-size", "1.5rem");
 
-const title_name =
+const text_name =
   "Explora el apasionante mundo de la NBA a través de nuestro mapa interactivo. Descubre las estadísticas de puntos, rebotes, bloqueos y robos de cada equipo de Estados Unidos, conéctandolos directamente con la región que representan. Además, conoce a los 10 máximos anotadores en la historia del juego. Sumérgete en los datos y desvela los secretos del baloncesto en nuestra plataforma especializada en el análisis estadístico de la NBA.";
-const titleLength = title_name.length;
+const textLength = text_name.length;
 
-title
+text
   .transition()
   .end()
   .then(() => {
-    for (let i = 0; i <= titleLength; i++) {
-      title
+    for (let i = 0; i <= textLength; i++) {
+      text
         .transition()
         .delay(6 * i)
-        .text(title_name.substr(0, i) + (i === titleLength ? "" : "|"));
+        .text(text_name.substr(0, i) + (i === textLength ? "" : "|"));
     }
   })
   .then(() => {
