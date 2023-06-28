@@ -57,29 +57,66 @@
                 <p>Luego del preprocesamiento, guardamos todos nuestros datos en archivos .json. Por esto, nuestros datos 
                     se organizan en pares de clave-valor, presentando anidadas las estructuras que lo requieran.
                     Por ejemplo, en el caso de los jugadores, se tiene un diccionario con la clave el nombre del jugador, y como valor 
-                    otro diccionario con la clave el año, y el valor los puntos anotados en ese año.
+                    otro diccionario con la clave el año, y el valor los puntos anotados en ese año. En general, todos nuestros datos, 
+                    exceptuando el mapa, son atributos de jugadores o equipos. 
                 </p>
-                <p> Respecto al mapa, este se encuentra en un archivo topojson, el cual codifica los datos geoespaciales de los estados. 
+                <p> Respecto al mapa, este se encuentra en un archivo topojson, el cual codifica los datos geoespaciales de los estados.
+                    Por ende, el tipo de dato que almacena es de posiciones.  
                 </p>
                 <p>Los atributos que tenemos en nuestros datos son los siguientes: </p>
                 <ul>
-                    <li> <b>Jugadores: </b> Representa el nombre de cada jugador</li>
+                    <li> <b>Jugadores: </b> Representa el nombre de cada jugador. </li>
                         <ul>
-                            <li>Categórico: Los nombres de los jugadores no pueden ordenarse intrínsecamente</li>
+                            <li>Categórico: Los nombres de los jugadores no pueden ordenarse intrínsecamente. En este caso 
+                                sí se ordenarán por información externa, con los puntos acumulados para el gráfico multilínea.
+                            </li>
                         </ul>
-                    <li> <b>Equipos </b> </li>
-                    <li> <b>Estados </b> </li> 
-                    <li> <b>Año: </b> Representa el año en el que se anotaron los puntos</li>
+                    <li> <b>Equipos: </b> Representa el nombre de los equipos de la NBA.</li>
+                        <ul>
+                            <li>Categórico: Los nombres de los equipos no presentan un orden intrínseco.</li>
+                        </ul>
+                    <li> <b>Estados: </b> Representa el nombre de los esatdos de Estados Unidos.</li> 
+                        <ul>
+                            <li>Categórico: Los nombres de los estados no presentan un orden intrínseco.</li>
+                        </ul>
+                    <li> <b>Año: </b> Representa el año en el que el jugador hizo los puntos/rebotes/robos/bloqueos.</li>
                         <ul>
                             <li>Cuantitativo Secuencial: Es posible realizar operaciones sobre los años, y naturalmente son mayores 
-                                que cero. 
-                            </li>
+                                o iguales que cero. 
+                            </li>Discreto: Dado que su dominio son los números naturales, no se puede tener 1.5 años, por ejemplo.
 
                         </ul>
-                    <li> <b>Puntos </b> </li>
-                    <li> <b>Rebotes </b> </li>
-                    <li> <b>Robos </b> </li>
-                    <li> <b>Bloqueos </b> </li>
+                    <li> <b>Puntos: </b> Representa a los puntos anotados por un equipo en cierto año. (se usa para gráficos de vistas coordinadas) </li>
+                        <ul>
+                            <li>Cuantitativo Secuencial: Es posible realizar operaciones sobre los puntos, y naturalmente son mayores 
+                                o iguales que cero. 
+                            </li>Discreto: Dado que su dominio son los números naturales, no se puede tener 1.5 puntos, por ejemplo.
+                        </ul>
+                    <li> <b>Puntos acumulados: </b> Representan a los puntos que lleva acumulados un jugador hasta la fecha en cuestión. 
+                    (se usa para gráfico multilínea) </li>
+                        <ul>
+                            <li>Cuantitativo Secuencial: Es posible realizar operaciones sobre los puntos acumulados, y naturalmente son mayores 
+                                o iguales que cero. 
+                            </li>Discreto: Dado que su dominio son los números naturales, no se puede tener 1.5 puntos acumulados, por ejemplo.
+                        </ul>
+                    <li> <b>Rebotes: </b> Representa los rebotes realizados por un equipo en un año en específico. </li>
+                        <ul>
+                            <li>Cuantitativo Secuencial: Es posible realizar operaciones sobre los rebotes, y naturalmente son mayores 
+                                o iguales que cero. 
+                            </li>Discreto: Dado que su dominio son los números naturales, no se puede tener 1.5 rebotes, por ejemplo.
+                        </ul>
+                    <li> <b>Robos: </b> Representa los robos realizados por un equipo en un año en específico. </li>
+                        <ul>
+                            <li>Cuantitativo Secuencial: Es posible realizar operaciones sobre los robos, y naturalmente son mayores 
+                                o iguales que cero. 
+                            </li>Discreto: Dado que su dominio son los números naturales, no se puede tener 1.5 robos, por ejemplo.
+                        </ul>
+                    <li> <b>Bloqueos: </b> Representa los bloqueos realizados por un equipo en un año en específico. </li>
+                        <ul>
+                            <li>Cuantitativo Secuencial: Es posible realizar operaciones sobre los bloqueos, y naturalmente son mayores 
+                                o iguales que cero. 
+                            </li>Discreto: Dado que su dominio son los números naturales, no se puede tener 1.5 bloqueos, por ejemplo.
+                        </ul>
                 </ul>
 
             </div>
@@ -92,9 +129,13 @@
                 <li> <b>Tarea 1: Identificar y almacenar correctamente jugadores y sus puntos. </b> Esta tarea requiere parear debidamente 
                 a un jugador con sus puntos a lo largo de las temporadas en las que ha jugado, logrando enfrentar escenarios como la no existencia
                 del jugador contemporáneo en épocas antiguas, o la obsolescencia de jugadores antiguos en temporadas recientes.</li>
+
+                <br>
                 <li> <b>Tarea 2: Explorar los Estados y analizar la viabilidad de la propuesta.</b> En Estados Unidos, algunos estados poseen más
                 de un equipo, y en otros no existe ninguno. Esta tarea consiste en estudiar cómo lidiar con la multiplicidad de equipos por estado, 
                 y el tratamiento al mapa en caso de que no posea equipos en ese estado.</li>
+
+                <br>
                 <li><b>Tarea 3: Analizar datos relevantes para coordinar las vistas, y la forma de visualizarlos.</b> Esta tarea busca encontrar aquella información que un 
                 usuario espararía encontrarse al presionar sobre un estado en nuestro mapa de coropletas. </li>
             </ul>
@@ -139,6 +180,12 @@
                 en el cambio de color de las barras del gráfico del costado derecho al mapa.</li>
 
                 <br>
+                <li> <b>Seleccionar/Borrar todo en el gráfico (Idiom de interacción):</b>
+                    Para lograr resultados inmediatos, se ofrecen botones para seleccionar todos los estados, y para borrar la selección 
+                puesta en el momento. Así, el usuario tiene elementos de fácil acceso que muestren el funcionamiento de nuestra visualización
+                de forma ágil. </li>
+
+                <br>
                 <li> <b>Reemplazar el 0 por un valor mínimo visible (Decisión de diseño):</b>
                 Así como existen jugadores que no jugaban en temporadas antiguas, existen equipos que no existían en épocas antiguas.
                 Debido a esto surge el inconveniente de que a la hora de seleccionar un año antiguo, en el gráfico de barra se muestra el equipo
@@ -160,7 +207,7 @@
                 relativamente alejado del mapa- por Toronto.  </li>
             </ul>
 
-            <h3>Gráfico Multilínea</h3><p>Se presentará un listado de elecciones asociadas a esta visualización.
+            <h3>Gráfico Multilínea: </h3><p>Se presentará un listado de elecciones asociadas a esta visualización.
                 Cabe destacar que todo lo que se detalle a continuación va alineado con el cumplimiento de la <b>Tarea 1.</b></p>
             <ul>
                 <li> <b>Nombres sobre las líneas (Decisión de diseño)</b>
