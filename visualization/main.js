@@ -32,15 +32,19 @@ d3.json("../US_States_and_Teams.json").then((dataUSAEquipos) => {
 
       // Función para calcular el valor mínimo y máximo de los valores por temporada
       function calcularDominio(año, opcion) {
-        console.log(año, opcion);
         const valorPorTemporada = Object.values(dataEquipos).map(
           (equipo) => equipo[año][opcion]
         );
-        minValor = d3.min(valorPorTemporada);
-        maxValor = d3.max(valorPorTemporada);
+
+        const valoresPorTemporadaFiltrados = valorPorTemporada.filter(
+          (valor) => valor !== 0
+        );
+        minValor = d3.min(valoresPorTemporadaFiltrados);
+        maxValor = d3.max(valoresPorTemporadaFiltrados);
+        return [minValor, maxValor];
       }
 
-      // Función para mostrar mensaje que estado no tieen equipos
+      // Función para mostrar mensaje que estado no tiene equipos
       function mostrarMensajeEstado(mensaje) {
         const mensajeEstado = document.getElementById("mensaje-estado");
         mensajeEstado.innerHTML = mensaje;
@@ -85,7 +89,7 @@ d3.json("../US_States_and_Teams.json").then((dataUSAEquipos) => {
           .data(datos.features)
           .style("fill", function (d) {
             let equipoMaxValor = null;
-            let maxValor = 0;
+            let maxValor = -1;
 
             const nombreEstado = d.properties.name;
             const colorActual = d3.select(this).style("fill");
@@ -94,15 +98,18 @@ d3.json("../US_States_and_Teams.json").then((dataUSAEquipos) => {
               if (equipos && equipos.length > 0) {
                 // Busca el equipo con más valor en el año seleccionado
                 equipos.forEach((equipo) => {
-                  const valor = dataEquipos[equipo][año][opcion];
-                  if (valor && valor > maxValor) {
+                  let valor = dataEquipos[equipo][año][opcion];
+                  if (valor > maxValor) {
                     equipoMaxValor = equipo;
                     maxValor = valor;
                   }
                 });
 
                 if (equipoMaxValor) {
-                  const valor = dataEquipos[equipoMaxValor][año][opcion];
+                  let valor = dataEquipos[equipoMaxValor][año][opcion];
+                  if (valor === 0) {
+                    valor = Math.round(minValor * 1.002);
+                  }
                   return colorScale(valor);
                 }
               }
@@ -186,9 +193,31 @@ d3.json("../US_States_and_Teams.json").then((dataUSAEquipos) => {
           (equipo) => dataEquipos[equipo][año][opcion]
         );
 
+        const valoresPorTemporadaFiltrados = valorPorTemporada.filter(
+          (valor) => valor !== 0
+        );
+
+        const valoresMinimoMaximo = calcularDominio(año, opcion);
+
         // Calcula el valor mínimo y máximo
-        const minValor = d3.min(valorPorTemporada);
-        const maxValor = d3.max(valorPorTemporada);
+        // const minValor =
+        //   d3.min(valoresPorTemporadaFiltrados) ??
+        //   Math.round(valoresMinimoMaximo[0] * 1.002);
+        // const maxValor =
+        //   d3.max(valoresPorTemporadaFiltrados) ??
+        //   Math.round(valoresMinimoMaximo[1] * 1.002);Math.round(valoresMinimoMaximo[1] * 1.002)
+
+        const minValor =
+          d3.min(valoresPorTemporadaFiltrados) === undefined &&
+          estadosSeleccionados.length !== 0
+            ? Math.round(valoresMinimoMaximo[0] * 1.002)
+            : d3.min(valoresPorTemporadaFiltrados);
+
+        const maxValor =
+          d3.max(valoresPorTemporadaFiltrados) === undefined &&
+          estadosSeleccionados.length !== 0
+            ? Math.round(valoresMinimoMaximo[1] * 1.002)
+            : d3.max(valoresPorTemporadaFiltrados);
 
         // Definimos una escala lineal para determinar la altura
         const escalaAltura = d3
@@ -239,7 +268,10 @@ d3.json("../US_States_and_Teams.json").then((dataUSAEquipos) => {
               enter
                 .append("rect")
                 .style("fill", function (d) {
-                  const valor = dataEquipos[d][año][opcion];
+                  let valor = dataEquipos[d][año][opcion];
+                  if (valor === 0) {
+                    valor = Math.round(valoresMinimoMaximo[0] * 1.002);
+                  }
                   return colorScale(valor);
                 })
                 .attr("y", HEIGHTVIS)
@@ -248,7 +280,10 @@ d3.json("../US_States_and_Teams.json").then((dataUSAEquipos) => {
                 .attr("x", (d) => escalaX(d)),
             (update) =>
               update.style("fill", function (d) {
-                const valor = dataEquipos[d][año][opcion];
+                let valor = dataEquipos[d][año][opcion];
+                if (valor === 0) {
+                  valor = Math.round(valoresMinimoMaximo[0] * 1.002);
+                }
                 return colorScale(valor);
               }),
             (exit) =>
@@ -265,18 +300,31 @@ d3.json("../US_States_and_Teams.json").then((dataUSAEquipos) => {
           .transition("update")
           .duration(500)
           .attr("width", escalaX.bandwidth())
-          .attr("height", (d) => escalaAltura(dataEquipos[d][año][opcion]))
+          .attr("height", (d) => {
+            let valor = dataEquipos[d][año][opcion];
+            if (valor === 0) {
+              valor = Math.round(valoresMinimoMaximo[0] * 1.002);
+            }
+            return escalaAltura(valor);
+          })
           .attr("x", (d) => escalaX(d))
-          .attr("y", (d) => escalaY(dataEquipos[d][año][opcion]));
+          .attr("y", (d) => {
+            let valor = dataEquipos[d][año][opcion];
+            if (valor === 0) {
+              valor = Math.round(valoresMinimoMaximo[0] * 1.002);
+            }
+            return escalaY(valor);
+          });
 
         contenedorVis
           .selectAll("rect")
           .on("mousemove", (event, d) => {
             tooltip.transition().duration(60).style("opacity", 0.9);
+            const valor = dataEquipos[d][año][opcion];
+            const valorMostrar =
+              valor === 0 ? Math.round(valoresMinimoMaximo[0] * 1.002) : valor;
             tooltip
-              .html(
-                `${getNombreOpcion(opcion)}: ${dataEquipos[d][año][opcion]}`
-              )
+              .html(`${getNombreOpcion(opcion)}: ${valorMostrar}`)
               .style("left", event.pageX + 5 + "px")
               .style("top", event.pageY - 20 + "px");
           })
@@ -391,7 +439,7 @@ d3.json("../US_States_and_Teams.json").then((dataUSAEquipos) => {
               const nombreEstado = d.properties.name;
               if (todosLosEstados.includes(nombreEstado)) {
                 let equipoMaxValor = null;
-                let maxValor = 0;
+                let maxValor = -1;
                 const equipos = dataUSAEquipos[nombreEstado];
                 if (equipos && equipos.length > 0) {
                   equipos.forEach((equipo) => {
@@ -467,7 +515,7 @@ d3.json("../US_States_and_Teams.json").then((dataUSAEquipos) => {
             // Si el estado ya está seleccionado, cambia su color de vuelta al color original
             d3.select(this).style("fill", function (d) {
               let equipoMaxValor = null;
-              let maxValor = 0;
+              let maxValor = -1;
               const equipos = dataUSAEquipos[nombreEstado];
               if (equipos && equipos.length > 0) {
                 // Busca el equipo con más valor en el año seleccionado
@@ -487,6 +535,10 @@ d3.json("../US_States_and_Teams.json").then((dataUSAEquipos) => {
                 );
                 const valor =
                   dataEquipos[equipoMaxValor][añoActual][opcionActual];
+
+                if (valor === 0) {
+                  return colorScale(minValor * 1.002);
+                }
                 return colorScale(valor);
               }
               actualizarEstadisticas(
@@ -501,7 +553,7 @@ d3.json("../US_States_and_Teams.json").then((dataUSAEquipos) => {
             // Elimina el texto
             svg.select("text").remove();
           } else {
-            // Si el estado no está seleccionado, cambia su color a rojo
+            // Si el estado no está seleccionado, cambia su color
             d3.select(this).style("fill", "rgb(65,105,225)");
             actualizarEstadisticas(
               estadosSeleccionados,
