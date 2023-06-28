@@ -16,14 +16,15 @@
                 <h3>Contexto de los Datos</h3>
                 <p>Para la realización del proyecto, se utilizarán datos de variadas fuentes. La fuente principal de información será
                     la <a href="https://github.com/swar/nba_api" target="_blank">API</a> de la NBA, la cual contiene información de los jugadores, equipos, partidos, entre otros.
-                    Para usarla, se harán peticiones a la API, se procesarán los datos, y se guardarán los datos relevantes en un json. 
+                    Para usarla, se harán peticiones a la API, se procesarán los datos, y se guardarán los datos relevantes en un json. Esto se realizó con python, 
+                    específicamente las librerías nba_api para las solicitudes, pandas para el procesamiento de datos, y json para guardar los datos en un archivo json.
                 </p>
                 <p>Para el uso del mapa de Estados Unidos, se encontró un <a href="https://github.com/topojson/us-atlas" target="_blank">repositorio</a> 
                     con un archivo topojson que contiene la información necesaria para dibujar el mapa.
                 </p>
                 <p>Decidimos basar nuestro proyecto en la NBA, ya que nos permite acercarnos
-                    más a un deporte que disfrutamos, y poder realizar visualizaciones de largo alcance, que reflejan datos que a veces 
-                    pasamos por alto. 
+                    más a un deporte que disfrutamos, y poder realizar visualizaciones de largo alcance, usando datos bien mantenidos y actualizados, 
+                    a pesar de la longevidad de la liga.
                 </p>
 
             </div>
@@ -53,8 +54,34 @@
             <h2>- Segundo Nivel: Abstracción de Datos y Tareas</h2>
             <div>
                 <h3>Abstracción de Datos</h3>
-                <p>La media paja ctm 
+                <p>Luego del preprocesamiento, guardamos todos nuestros datos en archivos .json. Por esto, nuestros datos 
+                    se organizan en pares de clave-valor, presentando anidadas las estructuras que lo requieran.
+                    Por ejemplo, en el caso de los jugadores, se tiene un diccionario con la clave el nombre del jugador, y como valor 
+                    otro diccionario con la clave el año, y el valor los puntos anotados en ese año.
                 </p>
+                <p> Respecto al mapa, este se encuentra en un archivo topojson, el cual codifica los datos geoespaciales de los estados. 
+                </p>
+                <p>Los atributos que tenemos en nuestros datos son los siguientes: </p>
+                <ul>
+                    <li> <b>Jugadores: </b> Representa el nombre de cada jugador</li>
+                        <ul>
+                            <li>Categórico: Los nombres de los jugadores no pueden ordenarse intrínsecamente</li>
+                        </ul>
+                    <li> <b>Equipos </b> </li>
+                    <li> <b>Estados </b> </li> 
+                    <li> <b>Año: </b> Representa el año en el que se anotaron los puntos</li>
+                        <ul>
+                            <li>Cuantitativo Secuencial: Es posible realizar operaciones sobre los años, y naturalmente son mayores 
+                                que cero. 
+                            </li>
+
+                        </ul>
+                    <li> <b>Puntos </b> </li>
+                    <li> <b>Rebotes </b> </li>
+                    <li> <b>Robos </b> </li>
+                    <li> <b>Bloqueos </b> </li>
+                </ul>
+
             </div>
             <div>
                 <h3>Abstracción de Tareas</h3>
@@ -76,65 +103,88 @@
         <div class="section">
             <h2>- Tercer Nivel: Codificación Visual y de Interacción</h2>
             <p>A continuación, se explicarán las codificaciones visuales utilizadas, y el porqué de ellas, en un listado de elecciones.</p>
-            <h3>Mapa de coropletas y gráficos de barra coordinados:</h3><p>Se presentará un listado de elecciones asociadas a estas dos visualizaciones.
+            <h3>Mapa de coropletas y Gráficos de barra coordinados:</h3><p>Se presentará un listado de elecciones asociadas a estas dos visualizaciones.
                 Cabe destacar que todo lo que se detalle a continuación va alineado con el cumplimiento de las <b>Tareas 2 y 3.</b></p>
             <ul>
-                <li> <b>Separación en 2 vistas (Decisión de diseño):</b>
+                <li> <b>Uso de 2 vistas coordinadas (Decisión de diseño):</b>
                 Ya que simplemente ver un mapa de diferentes tonalidades no es suficiente para un usuario, se decidió también incorporar
                 gráficos de barra coordinados, que ayudan a complementar la información que el usuario ve.</li>
-            </ul>
-            <ul>
+                
+                <br>
                 <li> <b>Mapa de coropletas de Estados Unidos (Idiom visual):</b>
                 Con el objetivo de forzar la interacción del usuario, se decidió hacer uso de un Mapa de coropletas. </li>
-            </ul>
-            <ul>
-                <li> <b>Color de los estados (canal):</b>
-                Para poder reconocer si un estado está seleccionado o no, cambiará el color de este.</li>
-            </ul>
+                
+                <br>
+                <li> <b>Color de los estados (Canal):</b>
+                Para poder reconocer si un estado está seleccionado o no, cambiará el color de este. Si está seleccionado, estará de color azul oscuro, 
+                y si no, vuelve a su color original. </li>
 
-            <ul>
-                <li> <b>Color de estados sin equipo, y color de estados con equipos pero que no existían en fecha escogida (canal): </b>
+                <br>
+                <li> <b>Color de estados sin equipo, y color de estados con equipos pero que no existían en fecha escogida (Canal): </b>
                 Una vez seleccionado un año, pueden sueceder tres cosas. El estado posee equipos y estos existían en el año seleccionado, 
                 el estado posee equipos y estos <b>no</b> existían en el año seleccionado, y el estado no posee equipos. Se decidió 
                 usar un color celeste claro en aquellos estados sin equipos, un color gris para representar los estados que sí poseen equipos, 
                 pero no en la fecha seleccionada, y una gama de rojos para aquellos estados con equipo/s en la fecha seleccionada, que varía 
                 su intensidad dependiendo de la cantidad de la estadística seleccionada. </li>
-            </ul>
 
-            <ul>
+                <br>
                 <li> <b>Gráfico de barras dinámico para mostrar estadísticas de estado/s seleccionado/s (Idiom visual):</b>
                 En la visualización que se despliega al costado derecho del mapa, se podrán ver en un gráfico de barras las 
                 estadísticas que el usuario desee revisar.</li>
-            </ul>
 
-            <ul>
+                <br>
                 <li> <b>Selección de filtro de estadísticas (Puntos, Rebotes, Bloqueos, Robos) y año (Idiom de interacción):</b>
                 Para comodidad de la interacción del usuario, este podrá seleccionar con un dropdown el año y la estadística que 
                 desea visualizar. Las elecciones que el usuario escoja se reflejarán tanto en el cambio de color del mapa, como 
                 en el cambio de color de las barras del gráfico del costado derecho al mapa.</li>
-            </ul>
 
-            <ul>
+                <br>
                 <li> <b>Reemplazar el 0 por un valor mínimo visible (Decisión de diseño):</b>
                 Así como existen jugadores que no jugaban en temporadas antiguas, existen equipos que no existían en épocas antiguas.
                 Debido a esto surge el inconveniente de que a la hora de seleccionar un año antiguo, en el gráfico de barra se muestra el equipo
                 pero con su valor igual a 0, no teniendo una barra asociada. Se decidió asignar un valor pequeño calculado en base al valor mínimo distinto
                 a 0, con el objetivo de que presenten una barra de todas formas en el gráfico, y velar así por la consistencia visual.</li>
+
+                <br>
+                <li> <b>Color del estado (Decisión de diseño):</b>
+                Como existen estados con más de un equipo -como California que posee 4- se decidió que el color en el mapa
+                no se define como la suma de la estadística (Puntos, Rebotes, Bloqueos, Robos) sino que el valor máximo por estado. Esto para 
+                poder tener mayor variedad en la distribución de colores al seleccionar diferentes estadísticas, dado que si usábamos la suma, 
+                naturalmente siempre los estados con mayor número de equipos presentarían los tonos más fuertes, lo cual generaría una baja variedad
+                al interactuar con el mapa. </li>
+
+                <br>
+                <li> <b>Reemplazo de Alaska por Toronto (Decisión de diseño):</b>
+                Existe el leve inconveniente de que un equipo de la NBA no es oriundo de Estados Unidos, sino de Canada (Toronto Raptors). 
+                Para poder darle visibilidad en nuestro mapa, se sustituyó el estado de Alaska -que no posee ningún equipo, y está
+                relativamente alejado del mapa- por Toronto.  </li>
             </ul>
 
             <h3>Gráfico Multilínea</h3><p>Se presentará un listado de elecciones asociadas a esta visualización.
                 Cabe destacar que todo lo que se detalle a continuación va alineado con el cumplimiento de la <b>Tarea 1.</b></p>
             <ul>
-                <li> <b>Nombres sobre las líneas (decisión de diseño)</b>
+                <li> <b>Nombres sobre las líneas (Decisión de diseño)</b>
                 Al hacer zoom, se puede notar que ciertos nombres se superponen levemente por la cercanía entre ellos. Se pensó en hacer 
                 una leyenda para evitar esto, pero se decidió dejarlo así para una mayor facilidad a la hora de leer el puntaje del jugador.</li>
 
-                <li> <b>Cotinuidad visual a pesar de dejar de jugar (decisión de diseño)</b>
+                <br>
+                <li> <b>Cotinuidad visual a pesar de dejar de jugar (Decisión de diseño)</b>
                 Como los jugadores más antiguos dejan de jugar en algún momento del dominio temporal, estos dejan de acumular puntos.
                 Con el fin de velar por la continuidad visual de su línea, estos seguirán avanzando hasta el año final del gráfico, 
                 avanzando horizontalmente. Así, al hacer el acercamiento cuando finalice la animación, se muestren todos los jugadores
                 que compiten en el top.</li>
 
+                <br>
+                <li> <b>Líneas paras representar valores cuantitativos (puntos acumulados por año) (Canal)</b>
+                    Las líneas que se usan en el gráfico multilínea representan la cantidad de puntos acumulados en el tiempo. 
+                    Usar esta marca unidimensional es útil para facilitar la comprensión del gráfico, factor muy importante 
+                    para seguirle el flujo a la animación.</li>
+
+
+                <br>
+                <li> <b>Color de línea para representar valores categóricos (nombres) (Canal):</b>
+                    Al ser menos de 12 jugadores los que se visualizan, se consideró pertinente asignar un color a cada uno. 
+                    La línea de color acompaña durante la animación el nombre del jugador.</li>
             </ul>
         </div>
     </div>
