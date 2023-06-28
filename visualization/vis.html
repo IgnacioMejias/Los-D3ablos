@@ -10,67 +10,79 @@
     <title>NBA: Estadísticas y visualización</title>
   </head>
   <body>
-    <div class="welcome">
-      <div class="welcome-text">
-        <h1>El Arte de los Números: Estadísticas y Análisis de la NBA</h1>
-        <h3>
-          Explora el apasionante mundo de la NBA a través de nuestro mapa
-          interactivo. Descubre las estadísticas de puntos, rebotes, bloqueos y
-          robos de cada equipo de Estados Unidos, conéctandolos directamente con
-          la región que representan. Además, conoce a los 10 máximos anotadores
-          en la historia del juego. Sumérgete en los datos y desvela los
-          secretos del baloncesto en nuestra plataforma especializada en el
-          análisis estadístico de la NBA.
-        </h3>
+    <section id="primera-seccion">
+      <div class="welcome">
+        <div class="welcome-text" id="welcome-text-id">
+          <h1>El Arte de los Números: Estadísticas y Análisis de la NBA</h1>
+        </div>
+        <div class="welcome-image">
+          <img src="../assets/welcomeImage.jpg" alt="welcome-image" />
+        </div>
       </div>
-      <div class="welcome-image">
-        <img src="../assets/welcomeImage.jpg" alt="welcome-image" />
+      <div class="boton-empezar">
+        <button id="boton-empezar-inicio">Empieza el recorrido</button>
       </div>
-    </div>
-    <div class="container">
-      <div class="mapa-botones">
-        <div class="botones-mensaje">
+    </section>
+    <section id="segunda-seccion">
+      <div class="container">
+        <div class="mapa-botones">
+          <div class="botones-mensaje">
+            <div class="botones">
+              <button class="boton" id="boton-seleccionar-todo">
+                Seleccionar Todo
+              </button>
+              <button class="boton" id="boton-borrar-seleccion">
+                Borrar selección
+              </button>
+            </div>
+            <div class="mensajeEstado">
+              <h3 id="mensaje-estado" style="width: 100%">
+                ¡Presiona un estado para ver sus equipos!
+              </h3>
+            </div>
+          </div>
+          <div class="map-container" id="map-container"></div>
+        </div>
+        <div class="botones-estadisticas">
           <div class="botones">
-            <button class="boton" id="boton-seleccionar-todo">
-              Seleccionar Todo
-            </button>
-            <button class="boton" id="boton-borrar-seleccion">
-              Borrar selección
-            </button>
+            <div class="dropdown">
+              <select class="select" id="año-select"></select>
+            </div>
+            <div class="dropdown">
+              <select class="select" id="opcion-select">
+                <option value="PTS">Puntos</option>
+                <option value="REB">Rebotes</option>
+                <option value="BLK">Bloqueos</option>
+                <option value="STL">Robos</option>
+              </select>
+            </div>
           </div>
-          <div class="mensajeEstado">
-            <h3 id="mensaje-estado" style="width: 100%">
-              ¡Presiona un estado para ver sus equipos!
-            </h3>
+          <div class="stats-container" id="estadisticas-container"></div>
+        </div>
+      </div>
+      <div class="boton-seguir">
+        <button id="boton-seguir-mitad">Seguir explorando</button>
+      </div>
+    </section>
+    <section id="tercera-seccion">
+      <div class="tercera-vis">
+        <div class="titulo-tercera-vis">
+          <h1>Los 10 máximos anotadores de la historia de la NBA</h1>
+        </div>
+        <div class="tercera-vis-info">
+          <div>
+            <div id="multilineChart"></div>
+          </div>
+          <div class="botones-multiline">
+            <button class="boton2" id="playButton">Play</button>
+            <button class="boton2" id="replayButton">Reiniciar</button>
           </div>
         </div>
-        <div class="map-container" id="map-container"></div>
       </div>
-      <div class="botones-estadisticas">
-        <div class="botones">
-          <div class="dropdown">
-            <select class="select" id="año-select"></select>
-          </div>
-          <div class="dropdown">
-            <select class="select" id="opcion-select">
-              <option value="PTS">Puntos</option>
-              <option value="REB">Rebotes</option>
-              <option value="BLK">Bloqueos</option>
-              <option value="STL">Robos</option>
-            </select>
-          </div>
-        </div>
-        <div class="stats-container" id="estadisticas-container"></div>
-      </div>
-    </div>
-    <div class="tercera-vis">
-      <div id="multilineChart"></div>
-      <div class="botones-multiline">
-        <button class="boton2" id="playButton">Play</button>
-        <button class="boton2" id="replayButton">Reiniciar</button>
-      </div>
-    </div>
+    </section>
+
     <script src="multilineChart.js"></script>
     <script src="map.js"></script>
+    <script src="pageLogic.js"></script>
   </body>
 </html>
