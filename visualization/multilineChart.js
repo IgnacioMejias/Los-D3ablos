@@ -1,7 +1,7 @@
 // cargar los datos desde el archivo JSON
 d3.json("../dataset/players_data.json").then(function(data) {
 
-    // obtener todas las temporadas
+    // obtener todas las temporadas 
     let allSeasons = [];
     for (let player in data) {
         for (let season in data[player]) {
@@ -12,7 +12,7 @@ d3.json("../dataset/players_data.json").then(function(data) {
     }
     allSeasons.sort();
 
-    // procesar los datos
+    // procesar los datos 
     let processedData = [];
     let totalPointsArray = [];
     for (let player in data) {
@@ -22,7 +22,6 @@ d3.json("../dataset/players_data.json").then(function(data) {
         };
         let totalPoints = 0; // contador acumulativo de puntos
         for (let season of allSeasons) {
-            // asegurarse de que cada jugador tenga un registro para cada temporada
             if (data[player][season] !== undefined) {
                 totalPoints += data[player][season];
             }
@@ -37,18 +36,14 @@ d3.json("../dataset/players_data.json").then(function(data) {
         processedData.push(playerData);
     }
 
-    // establecer los márgenes y las dimensiones del gráfico
     let margin = {top: 20, right: 80, bottom: 30, left: 50};
     let width = 960 - margin.left - margin.right;
     let height = 500 - margin.top - margin.bottom;
 
-    // configurar las escalas x e y
     let x = d3.scaleTime().range([0, width]);
     let y = d3.scaleLinear().range([height, 0]);
 
-    // configurar el generador de líneas
     let line = d3.line()
-        //.x(function(d) { return x(d.season) + x.bandwidth() / 2; }) // coloca cada punto en el centro de su banda
         .x(function(d) { return x(new Date(d.season)); })
         .y(function(d) { return y(d.points); });
 
@@ -67,23 +62,24 @@ d3.json("../dataset/players_data.json").then(function(data) {
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     // definir el clipPath
-    svg.append("defs").append("clipPath") // define un clipPath dentro de 'defs'
-        .attr("id", "areaClip") // asignar un ID
-        .append("rect") // agregar un rectángulo dentro del clipPath
-        .attr("width", width) // el rectángulo tiene el mismo tamaño que el área del gráfico
+    svg.append("defs").append("clipPath") 
+        .attr("id", "areaClip") 
+        .append("rect") 
+        .attr("width", width) 
         .attr("height", height); 
 
 
+    let myG = svg.append("g")
+    .attr("clip-path", "url(#areaClip)"); 
 
-    let lineGroup = svg.append("g")
+
+    let lineGroup = myG.append("g")
         .attr("class", "line-group")
-        .attr("clip-path", "url(#areaClip)"); 
 
     let legendGroup = svg.append("g")
         .attr("class", "legend-group");
 
 
-    // agregar el eje X
     svg.append("g")
         .attr("class", "eje-x")
         .attr("transform", "translate(0," + height + ")")
@@ -94,26 +90,31 @@ d3.json("../dataset/players_data.json").then(function(data) {
         .attr("dy", ".15em")
         .attr("transform", "rotate(-65)");
 
-    // agregar el eje Y
     svg.append("g")
         .attr("class", "eje-y")
         .call(d3.axisLeft(y));
 
+    svg.append("text")             
+    .attr("transform",
+            "translate(" + (width/2) + " ," + 
+                            (height + margin.top - 20) + ")") 
+    .style("text-anchor", "middle")
+    .text("Año");
 
-
-
-// definir el manejador del zoom
+    svg.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0 - margin.left)
+        .attr("x",0 - (height / 2))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text("Puntos Acumulados"); 
+    
 const manejadorZoom = (evento) => {
     const transformacion = evento.transform;
 
-    
     // Actualizamos posición y tamaño usando transform
     lineGroup.attr("transform", transformacion);
     legendGroup.attr("transform", transformacion);
-    //svg.selectAll(".line").attr("transform", transformacion);
-    
-    //y.domain([27000,39000]);
-    // Ajustamos escalas. Esta función solo sirve con escalas continuas.
     const escalaY2 = transformacion.rescaleY(y);
     const escalaX2 = transformacion.rescaleX(x);
 
@@ -137,69 +138,84 @@ const zoom = d3.zoom()
 // Conectar el objeto zoom con el SVG
 svg.call(zoom);
 
-// dibujar las líneas
 document.getElementById("playButton").addEventListener("click", function() {
 
-    processedData.forEach(function(playerData, i) {
-        //let path = svg.append("path")
-        let path = lineGroup.append("path")
-            .datum(playerData.values)
-            .attr("fill", "none")
-            .attr("stroke", function() { return d3.schemeCategory10[i % 10]; }) // alternar colores
-            .attr("stroke-linejoin", "round")
-            .attr("stroke-linecap", "round")
-            .attr("stroke-width", 1.5)
-            .attr("class", "line")
-            .attr("d", line);
+    let lines = lineGroup.selectAll(".line")
+        .data(processedData, function(d) { return d.name; });
 
-        // agregar animación
-        let totalLength = path.node().getTotalLength();
-        path.attr("stroke-dasharray", totalLength + " " + totalLength)
-            .attr("stroke-dashoffset", totalLength)
-            .transition()
-            .duration(1000)
-            .ease(d3.easeLinear)
-            .attr("stroke-dashoffset", 0);
+    let paths = {};
+    let newLines = lines.enter().append("path")
+        .attr("fill", "none")
+        .attr("stroke", function(d, i) { return d3.schemeCategory10[i % 10]; })
+        .attr("stroke-linejoin", "round")
+        .attr("stroke-linecap", "round")
+        .attr("stroke-width", 1.5)
+        .attr("class", "line")
+        .attr("d", function(d) { return line(d.values); })
+        .each(function(playerData) {
+            let path = d3.select(this);
+            let totalLength = path.node().getTotalLength();
 
-        // agregar leyenda
-        let legend = legendGroup.append("text")
-            .datum({name: playerData.name, value: playerData.values[0]})
-            .attr("class", "leyenda")
-            .attr("x", 3)
-            .attr("dy", "0.35em ")  // separar cada leyenda por 15px
-            .style("font", "10px sans-serif")
-            .text(function(d) { return d.name; });
+            paths[playerData.name] = {path: path, totalLength: totalLength};
 
+            path.attr("stroke-dasharray", totalLength + " " + totalLength)
+                .attr("stroke-dashoffset", totalLength)
+                .transition()
+                .duration(8000)
+                .ease(d3.easeLinear)
+                .attr("stroke-dashoffset", 0);
+        });
 
+    lines.exit().remove();
 
+    let legends = legendGroup.selectAll(".leyenda")
+        .data(processedData, function(d) { return d.name; });
 
-        // agregar animación a la leyenda
-        legend.transition()
-            .duration(1000)
-            .ease(d3.easeLinear)
-            .attrTween("transform", function(d) {
-                //let interpolate = d3.interpolateNumber(0, playerData.values.length - 1);
-                let interpolate = d3.interpolateNumber(0, totalLength);
-                return function(t) {
-                    let p = path.node().getPointAtLength(interpolate(t));
-                    return "translate(" + p.x + "," + p.y + ")";
-                };
-            })
-            
-            .end() // cuando la transición termine
-            .then(() => {
-                // define a dónde quieres hacer zoom, y cuánto (esto dependerá de tus datos y de cómo quieras que se vea el zoom)
-                let xZoom = -500;
-                let yZoom = 20; 
-                let escalaZoom = 2; 
-    
-                // obtén una transformación de identidad y define la posición y la escala a la que hacer zoom
-                let transformacionZoom = d3.zoomIdentity.scale(escalaZoom).translate(xZoom, yZoom);
-    
-                // aplica esta transformación
-                svg.transition().duration(1000).call(zoom.transform, transformacionZoom);
-            });
-    });
+    legends.enter().append("text")
+        .attr("class", "leyenda")
+        .attr("x", 3)
+        .attr("dy", "0.35em")
+        .style("font", "10px sans-serif")
+        .text(function(d) { return d.name; })
+        .transition()
+        .duration(8000)
+        .ease(d3.easeLinear)
+        .attrTween("transform", function(d) {
+            let path = paths[d.name].path;
+            let totalLength = paths[d.name].totalLength;
+
+            let interpolate = d3.interpolateNumber(0, totalLength);
+            return function(t) {
+                let p = path.node().getPointAtLength(interpolate(t));
+                return "translate(" + p.x + "," + p.y + ")";
+            };
+        })
+        .end()
+        .then(() => {
+            let xZoom = -600;
+            let yZoom = 16; 
+            let escalaZoom = 3; 
+
+            let transformacionZoom = d3.zoomIdentity.scale(escalaZoom).translate(xZoom, yZoom);
+
+            svg.transition().duration(2000).call(zoom.transform, transformacionZoom);
+            legendGroup.selectAll(".leyenda").style("font", "5px sans-serif");
+        });
+
+    legends.exit().remove();
+
 });
 
+
+const reinicio = d3.select("#replayButton");
+reinicio.on("click", () => {
+    // Obtenemos una transformación identidad (x=0, y=0, k=1)
+    const transformacion = d3.zoomIdentity;
+    // De forma elegante (con transition) aplicamos esta transformación
+    svg.transition().duration(1000).call(zoom.transform, transformacion);
+
+    d3.selectAll(".line").remove();
+
+    d3.selectAll(".leyenda").remove();
+  });
 });
