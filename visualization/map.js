@@ -479,14 +479,14 @@ d3.json("../dataset/US_States_and_Teams.json").then((dataUSAEquipos) => {
         .append("path")
         .attr("d", path)
         .style("stroke", "#fff") // color de las líneas
-        .style("stroke-width", "1") // grosor de las líneas
+        .style("stroke-width", "1.5") // grosor de las líneas
         .on("mouseover", function (event, d) {
           // evento de mouseover
           // Muestra el nombre del estado en el mapa
           svg
             .append("text")
             .attr("x", 600)
-            .attr("y", 100)
+            .attr("y", 50)
             .text(d.properties.name)
             .attr("font-family", "sans-serif")
             .attr("font-size", "20px")
